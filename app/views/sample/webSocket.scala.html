@@ -1,0 +1,55 @@
+@()(implicit flash: Flash, messages: Messages)
+
+@main("WebSocket") {
+  <script type="text/javascript">
+    window.addEventListener("load", function () {
+      var output = document.getElementById("output");
+      wsHi();
+      wsHello();
+      
+      function wsHi() {
+        var websocket = new WebSocket("ws://" + location.host + "@controllers.sample.routes.WebSocketSample.hi");
+        websocket.onopen = function() {
+          websocket.send("Hi")
+        };
+        websocket.onmessage = function(evt) {
+          writeMessage(evt.data)
+        };
+        var count = 0;
+        document.getElementById("websocket-hi").addEventListener("click", function() {
+          websocket.send("Hi " + (++count));
+        });
+      }
+      function wsHello() {
+        var websocket = new WebSocket("ws://" + location.host + "@controllers.sample.routes.WebSocketSample.hello");
+        
+        websocket.onopen = function() {
+          websocket.send("Reactive")
+        };
+        websocket.onmessage = function(evt) {
+          writeMessage(evt.data)
+        };
+        var count = 0;
+        document.getElementById("websocket-hello").addEventListener("click", function() {
+          websocket.send("Reactive " + (++count));
+        });
+      }
+      function writeMessage(msg) {
+        var h2 = document.createElement("h2");
+        h2.innerText = msg;
+        output.insertBefore(h2, output.firstChild);
+      }
+    }, false);
+  </script>
+
+  <div class="container">
+    <fieldset>
+      <legend>WebSocket</legend>
+      <div align = "right">
+        <button class="btn btn-info" id="websocket-hi">WebSocket Hi</button>
+        <button class="btn btn-info" id="websocket-hello">WebSocket Hello</button>
+      </div>
+      <div id="output"></div>
+    </fieldset>
+  </div>
+}
